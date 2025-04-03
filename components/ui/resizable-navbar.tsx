@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import type React from "react"
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 // Navbar container
 export const Navbar = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -21,15 +21,25 @@ export const Navbar = ({ children, className, ...props }: React.HTMLAttributes<H
   }, [])
 
   return (
-    <motion.nav
-      className={cn(/* 类名不变 */)}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      {...props as any} // 临时解决方案：使用类型断言
+    <div
+      className={cn(
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        scrolled
+          ? "border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80"
+          : "bg-transparent",
+        className,
+      )}
+      {...props}
     >
-      {children}
-    </motion.nav>
+      <motion.div
+        className="w-full"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      >
+        {children}
+      </motion.div>
+    </div>
   )
 }
 
@@ -92,17 +102,9 @@ export const NavbarLogo = ({
     <div className={cn("flex items-center", className)} {...props}>
       <Link href="/" className="flex items-center gap-2 group">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-900 text-white transition-transform duration-300 group-hover:scale-110 dark:bg-white dark:text-neutral-900">
-          <motion.span className="font-bold" whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
-            {logoLetter}
-          </motion.span>
+          <span className="font-bold">{logoLetter}</span>
         </div>
-        <motion.span
-          className="text-lg font-semibold text-neutral-900 dark:text-white"
-          whileHover={{ y: -2 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-        >
-          {brandName}
-        </motion.span>
+        <span className="text-lg font-semibold text-neutral-900 dark:text-white">{brandName}</span>
       </Link>
     </div>
   )
@@ -110,24 +112,28 @@ export const NavbarLogo = ({
 
 // Button component
 export const NavbarButton = ({
-    variant = "primary",
-    className,
-    children,
-    ...props
-  }: {
-    variant?: "primary" | "secondary"
-  } & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-    return (
-      <motion.button
-        className={cn(/* 类名不变 */)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        {...props as any} // 临时解决方案
-      >
-        {children}
-      </motion.button>
-    )
-  }
+  variant = "primary",
+  className,
+  children,
+  ...props
+}: {
+  variant?: "primary" | "secondary"
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  return (
+    <button
+      className={cn(
+        "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95",
+        variant === "primary"
+          ? "bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+          : "bg-neutral-100 text-neutral-900 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
 
 // Mobile navigation header
 export const MobileNavHeader = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -149,44 +155,42 @@ export const MobileNavToggle = ({
   onClick: () => void
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
-    <motion.button
+    <button
       onClick={onClick}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50",
+        "flex h-10 w-10 items-center justify-center rounded-lg text-neutral-600 transition-all duration-200 hover:bg-neutral-100 hover:text-neutral-900 active:scale-90 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-50",
         className,
       )}
-      whileTap={{ scale: 0.9 }}
       {...props}
-      {...props as any}
     >
       {isOpen ? <X size={20} /> : <Menu size={20} />}
-    </motion.button>
+    </button>
   )
 }
+
 // Mobile navigation menu
 export const MobileNavMenu = ({
-    isOpen,
-    onClose,
-    children,
-    className,
-    ...props
-  }: {
-    isOpen: boolean
-    onClose: () => void
-    children: React.ReactNode
-  } & React.HTMLAttributes<HTMLDivElement>) => {
-    return (
-      <motion.div
-        className={cn(/* 类名不变 */)}
-        initial={{ opacity: 0, height: 0 }}
-        animate={{
-          opacity: isOpen ? 1 : 0,
-          height: isOpen ? "auto" : 0,
-        }}
-        {...props as any} // 临时解决方案
-      >
-        {children}
-      </motion.div>
-    )
-  }
+  isOpen,
+  onClose,
+  children,
+  className,
+  ...props
+}: {
+  isOpen: boolean
+  onClose: () => void
+  children: React.ReactNode
+} & React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
+      className={cn(
+        "absolute left-0 right-0 top-16 flex flex-col gap-6 border-t border-neutral-200 bg-white p-6 transition-all duration-300 dark:border-neutral-800 dark:bg-neutral-950",
+        isOpen ? "pointer-events-auto opacity-100 translate-y-0" : "pointer-events-none opacity-0 -translate-y-4",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
 

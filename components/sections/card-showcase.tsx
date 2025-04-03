@@ -4,6 +4,18 @@ import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
+// 定义职业类型
+interface Profession {
+  title: string
+  link: string
+}
+
+// 定义组件属性
+interface Profile3DCardProps {
+  names: string[]
+  professions: Profession[]
+  className?: string
+}
 
 export function ProductCard3D() {
   return (

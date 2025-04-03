@@ -21,11 +21,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <NavbarDemo /> {/* 使用新的导航栏 */} 
-          <div className="pt-16">
-            {" "}
-            {/* 添加顶部内边距，为固定导航栏留出空间 */}
+         
             {children}
-          </div>
+          
         </ThemeProvider>
       </body>
     </html>
